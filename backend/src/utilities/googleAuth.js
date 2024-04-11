@@ -6,10 +6,10 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/auth/google/callback",
+  callbackURL: "api/v1/user/auth/google/callback",
   scope: ["profile", "email"]
 },
-  async (accessToken, refreshToken, profile, done) => {
+  async (accessToken, refreshToken, profile, cb) => {
     console.log(profile);
     console.log(accessToken);
 
@@ -21,18 +21,18 @@ passport.use(new GoogleStrategy({
           googleId: profile.id,
           displayName: profile.displayName,
           email: profile.emails[0].value,
-          avatar: profile.photos[0].value || "",
+          profilePic: profile.photos[0].value || "",
           accessToken, 
           refreshToken,
         })
         await user.save();
         console.log("user created")
       }
-      return done(null, user)
+      return cb(null, user)
 
     } catch (error) {
       console.log(error)
-      return done(error, null)
+      return cb(error, null)
     }
 
   }
@@ -40,11 +40,11 @@ passport.use(new GoogleStrategy({
 ));
 
 
-passport.serializeUser((user, done) => {
-  done(null, user)
+passport.serializeUser((user, cb) => {
+  cb(null, user)
 });
 
-passport.deserializeUser((user, done) => {
-  done(null, user)
+passport.deserializeUser((user, cb) => {
+  cb(null, user)
 });
 
